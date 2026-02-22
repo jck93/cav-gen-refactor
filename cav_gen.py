@@ -3,7 +3,7 @@ import numpy as np
 from .subtessera import subtessera
 from .constants import *
 from .sphere import Sphere
-from .tessera import Tessera
+from .tessera import Tessera, Tesserae
 from .connectivity import Connectivity
 from .get_vertex_positions import get_vertex_positions
 
@@ -40,7 +40,7 @@ def cav_gen(subtesserae_per_sphere, tess_min_distance, spheres):
         sphere.convert_to_angstrom()
     vertex_positions = get_vertex_positions()
     connectivity = Connectivity(subtesserae_per_sphere)
-    tesserae = []
+    tesserae = Tesserae()
     for isphere, sphere in enumerate(spheres):
         for itess in range(TESSERAE_PER_SPHERE):
             for isubtess in range(subtesserae_per_sphere):
@@ -51,13 +51,7 @@ def cav_gen(subtesserae_per_sphere, tess_min_distance, spheres):
                 point, normal, area = subtessera(isphere, spheres, pts)
                 if abs(area) >= M_EPSILON:
                     tesserae.append(Tessera(point, normal, area, sphere.r))
-    itesss_to_merge = get_itesss_to_merge(tesserae, tess_min_distance)
-    while itesss_to_merge is not None:
-        tesserae = merge(tesserae, itesss_to_merge)
-        itesss_to_merge = get_itesss_to_merge(tesserae, tess_min_distance)
-    # volume = sum(tessera.area * np.dot(tessera.point, tessera.normal) for tessera in tesserae) / 3
-    # area = sum(tessera.area for tessera in tesserae)
-    for tessera in tesserae:
-        tessera.convert_to_bohr()
+    tesserae.merge_close_tesserae(tess_min_distance)
+    tesserae.convert_to_bohr()
     return tesserae
 
