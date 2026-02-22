@@ -1,6 +1,6 @@
 import numpy as np
 
-from .subtessera_refactored import subtessera
+from .subtessera import subtessera
 from .constants import *
 from .sphere import Sphere
 from .tessera import Tessera
