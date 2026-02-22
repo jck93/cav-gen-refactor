@@ -42,6 +42,10 @@ class Sphere:
     z: np.float64
     r: np.float64
 
+    @property
+    def xyz(self):
+        return np.array([self.x, self.y, self.z], dtype=np.float64)
+
 
 @dataclass
 class Tessera:
@@ -124,17 +128,9 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
 
                 pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
 
-                pts[0, 0] = cv[n1, 0] * sphere.r + sphere.x
-                pts[1, 0] = cv[n1, 2] * sphere.r + sphere.y
-                pts[2, 0] = cv[n1, 1] * sphere.r + sphere.z
-
-                pts[0, 1] = cv[n2, 0] * sphere.r + sphere.x
-                pts[1, 1] = cv[n2, 2] * sphere.r + sphere.y
-                pts[2, 1] = cv[n2, 1] * sphere.r + sphere.z
-
-                pts[0, 2] = cv[n3, 0] * sphere.r + sphere.x
-                pts[1, 2] = cv[n3, 2] * sphere.r + sphere.y
-                pts[2, 2] = cv[n3, 1] * sphere.r + sphere.z
+                pts[:, 0] = cv[n1, [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 1] = cv[n2, [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 2] = cv[n3, [0, 2, 1]] * sphere.r + sphere.xyz
                 nv = 3
                 pts, pp, pp1, area = subtessera(isphere, spheres, nv, pts)
 
