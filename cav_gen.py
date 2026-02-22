@@ -35,15 +35,15 @@ def merge(tesserae, itesss_to_merge):
     return tesserae
 
 
-def cav_gen(tess_sphere, tess_min_distance, spheres):
+def cav_gen(subtesserae_per_sphere, tess_min_distance, spheres):
     for sphere in spheres:
         sphere.convert_to_angstrom()
     vertex_positions = get_vertex_positions()
+    connectivity = Connectivity(subtesserae_per_sphere)
     tesserae = []
-    connectivity = Connectivity(tess_sphere)
     for isphere, sphere in enumerate(spheres):
-        for itess in range(N_TESS_SPHERE):
-            for isubtess in range(tess_sphere):
+        for itess in range(TESSERAE_PER_SPHERE):
+            for isubtess in range(subtesserae_per_sphere):
                 pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
                 pts[:, 0] = vertex_positions[connectivity.n0(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
                 pts[:, 1] = vertex_positions[connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
