@@ -3,7 +3,7 @@ import numpy as np
 from .constants import DIM_VERTICES, PCM_DIM_SPACE, DIM_ANGLES
 
 
-THEV = ( 
+POLAR_ANGLES = ( 
   0.6523581398,  1.107148718, 1.382085796, 
    1.759506858,  2.034443936, 2.489234514,
   0.3261790699, 0.5535743589, 
@@ -15,7 +15,7 @@ THEV = (
    2.815413584
 )
 
-FIV = (
+AZIMUTHAL_ANGLES = (
   0.6283185307, 0.0000000000,
   0.6283185307, 0.0000000000, 0.6283185307, 
   0.0000000000, 0.6283185307, 0.0000000000, 
@@ -27,7 +27,7 @@ FIV = (
   0.0000000000
 )
 
-FIR = 1.256637061
+AZIMUTHAL_INCREMENT = 1.256637061
 
 
 def get_vertex_positions():
@@ -35,17 +35,13 @@ def get_vertex_positions():
     vertex_positions[0, 2] = 1.0
     vertex_positions[121, 2] = -1.0
     index = 0
-    for iangle in range(DIM_ANGLES):
-        th = THEV[iangle]
-        fi0 = FIV[iangle]
-        cth = np.cos(th)
-        sth = np.sin(th)
+    for theta, phi_0 in zip(POLAR_ANGLES, AZIMUTHAL_ANGLES):
         for jangle in range(5):
-            fi = fi0 + jangle * FIR
+            phi = phi_0 + jangle * AZIMUTHAL_INCREMENT
             index += 1
-            vertex_positions[index, 0] = sth * np.cos(fi)
-            vertex_positions[index, 1] = sth * np.sin(fi)
-            vertex_positions[index, 2] = cth
+            vertex_positions[index, 0] = np.sin(theta) * np.cos(phi)
+            vertex_positions[index, 1] = np.sin(theta) * np.sin(phi)
+            vertex_positions[index, 2] = np.cos(theta)
     return vertex_positions
 
 
