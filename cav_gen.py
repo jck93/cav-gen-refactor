@@ -125,7 +125,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
     cv = np.zeros((DIM_VERTICES, PCM_DIM_SPACE), dtype=np.float64)
     xyz = np.zeros((tess_sphere * N_TESS_SPHERE, PCM_DIM_SPACE), dtype=np.float64)
     ast = np.zeros(tess_sphere * N_TESS_SPHERE, dtype=np.float64)
-    nctst = np.zeros((PCM_DIM_SPACE, tess_sphere * N_TESS_SPHERE), dtype=np.float64)
+    nctst = np.zeros((tess_sphere * N_TESS_SPHERE, PCM_DIM_SPACE), dtype=np.float64)
 
     rescaled_spheres = []
     to_angstrom = lambda bohr: bohr / 1.8897259886
@@ -212,7 +212,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
 
                 index = tess_sphere * itess + isubtess
                 xyz[index] = pp.copy()
-                nctst[:, index] = pp1  # TODO: turn dimensions around
+                nctst[index] = pp1.copy() 
                 ast[index] = area
                 isfet[index] = isphere
 
@@ -221,7 +221,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
                 continue
             tessera = Tessera(
                 point=xyz[itess].copy(),
-                normal=nctst[:, itess].copy(),
+                normal=nctst[itess].copy(),
                 area=ast[itess],
                 r_sphere=spheres[isfet[itess]].r
             )
