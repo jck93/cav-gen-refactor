@@ -174,11 +174,3 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
         )
     return tesserae_bohr
 
-
-if __name__ == "__main__":
-    spheres = [Sphere(0, 0, 0, 2), Sphere(1, 0, 0, 2), Sphere(0.5, 1.5, 0, 1.5)]
-
-    tesserae = cav_gen(1, 0.3, spheres)
-    for t in tesserae:
-        print(t.point)
-
