@@ -1,8 +1,9 @@
 import numpy as np
 from .inter import inter
 from .gaubon import gaubon
+from .constants import NVERTICES
 
-def subtessera(isphere, spheres, nvertices, pts):
+def subtessera(isphere, spheres, pts):
     """Compute uncovered tessera region for a sphere and its area, representative point, and normal."""
     
     TOL = -1e-10
@@ -12,6 +13,8 @@ def subtessera(isphere, spheres, nvertices, pts):
 
     sphere = spheres[isphere]
     intsph = isphere * np.ones(DIM_TEN, dtype=int)
+
+    nvertices = NVERTICES
     
     # Temporary arrays
     pscr = np.zeros((PCM_DIM_SPACE, DIM_TEN))
@@ -43,7 +46,7 @@ def subtessera(isphere, spheres, nvertices, pts):
 
         # If all vertices are inside the other sphere, tessera is fully covered
         if np.all(ind[:nvertices] == 1):
-            return pts, pp, pp1, area
+            return pp, pp1, area
 
         # Determine edge types (ltyp)
         ltyp = np.zeros(nvertices, dtype=int)
@@ -74,7 +77,7 @@ def subtessera(isphere, spheres, nvertices, pts):
         icut = np.sum((ltyp == 1) | (ltyp == 2)) + 2 * np.sum(ltyp == 3)
         icut //= 2
         if icut > 1:
-            return pts, pp, pp1, area 
+            return pp, pp1, area 
 
 
         # Build new vertices
@@ -147,5 +150,5 @@ def subtessera(isphere, spheres, nvertices, pts):
     area, pp, pp1 = gaubon(spheres, nvertices, isphere, pts, ccc, intsph)
 
 
-    return pts, pp, pp1, area
+    return pp, pp1, area
 
