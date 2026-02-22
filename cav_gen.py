@@ -54,7 +54,7 @@ class Tessera:
     r_sphere: np.float64
 
 
-def cav_gen(tess_sphere, tess_min_distance, sfe):
+def cav_gen(tess_sphere, tess_min_distance, spheres):
 
     DIM_ANGLES = 24
     DIM_TEN = 10
@@ -131,7 +131,7 @@ def cav_gen(tess_sphere, tess_min_distance, sfe):
 
     rescaled_spheres = []
     to_angstrom = lambda bohr: bohr / 1.8897259886
-    for sphere in sfe:
+    for sphere in spheres:
         rescaled_spheres.append(
             Sphere(
                 to_angstrom(sphere.x),
@@ -140,7 +140,7 @@ def cav_gen(tess_sphere, tess_min_distance, sfe):
                 to_angstrom(sphere.r)
             )
         )
-    sfe = rescaled_spheres
+    spheres = rescaled_spheres
 
     cv[0, 2] = 1.0
     cv[121, 2] = -1.0
@@ -161,7 +161,7 @@ def cav_gen(tess_sphere, tess_min_distance, sfe):
 
     ntess = 0
     cts = []
-    for isphere, sphere in enumerate(sfe):
+    for isphere, sphere in enumerate(spheres):
 
 
         xctst[:] = 0
@@ -209,7 +209,7 @@ def cav_gen(tess_sphere, tess_min_distance, sfe):
                 pts[1, 2] = cv[n3, 2] * sphere.r + sphere.y
                 pts[2, 2] = cv[n3, 1] * sphere.r + sphere.z
                 nv = 3
-                pts, pp, pp1, area = subtessera(isphere, sfe, nv, pts)
+                pts, pp, pp1, area = subtessera(isphere, spheres, nv, pts)
 
                 if abs(area) < M_EPSILON:
                     continue
@@ -229,7 +229,7 @@ def cav_gen(tess_sphere, tess_min_distance, sfe):
                 point=(xctst[itess], yctst[itess], zctst[itess]),
                 normal=nctst[:, itess].copy(),
                 area=ast[itess],
-                r_sphere=sfe[isfet[itess]].r
+                r_sphere=spheres[isfet[itess]].r
             )
             cts.append(tessera)
 
