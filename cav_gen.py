@@ -4,6 +4,7 @@ from .subtessera_refactored import subtessera
 from .constants import *
 from .sphere import Sphere
 from .tessera import Tessera
+from .connectivity import Connectivity
 
 
 def get_itesss_to_merge(tesserae, tess_min_dist):
@@ -67,34 +68,14 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
 
 
     tesserae = []
+    connectivity = Connectivity(tess_sphere)
     for isphere, sphere in enumerate(spheres):
         for itess in range(N_TESS_SPHERE):
             for isubtess in range(tess_sphere):
-                if tess_sphere == 1:
-                    n1 = JVT1[0, itess]
-                    n2 = JVT1[1, itess]
-                    n3 = JVT1[2, itess]
-                else:
-                    if isubtess == 0:
-                        n1 = JVT1[0, itess]
-                        n2 = JVT1[4, itess]
-                        n3 = JVT1[3, itess]
-                    elif isubtess == 1:
-                        n1 = JVT1[3, itess]
-                        n2 = JVT1[5, itess]
-                        n3 = JVT1[2, itess]
-                    elif isubtess == 2:
-                        n1 = JVT1[3, itess]
-                        n2 = JVT1[4, itess]
-                        n3 = JVT1[5, itess]
-                    else:  # isubtess == 3
-                        n1 = JVT1[1, itess]
-                        n2 = JVT1[5, itess]
-                        n3 = JVT1[4, itess]
                 pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
-                pts[:, 0] = cv[n1, [0, 2, 1]] * sphere.r + sphere.xyz
-                pts[:, 1] = cv[n2, [0, 2, 1]] * sphere.r + sphere.xyz
-                pts[:, 2] = cv[n3, [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 0] = cv[connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 1] = cv[connectivity.n2(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 2] = cv[connectivity.n3(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
                 point, normal, area = subtessera(isphere, spheres, pts)
                 if abs(area) >= M_EPSILON:
                     tesserae.append(Tessera(point, normal, area, sphere.r))
