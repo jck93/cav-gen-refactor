@@ -123,9 +123,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
     jvt1 = np.array(idum, dtype=int).reshape((6, 60), order="F") - 1
 
     cv = np.zeros((DIM_VERTICES, PCM_DIM_SPACE), dtype=np.float64)
-    xctst = np.zeros(tess_sphere * N_TESS_SPHERE, dtype=np.float64)
-    yctst = np.zeros(tess_sphere * N_TESS_SPHERE, dtype=np.float64)
-    zctst = np.zeros(tess_sphere * N_TESS_SPHERE, dtype=np.float64)
+    xyz = np.zeros((tess_sphere * N_TESS_SPHERE, PCM_DIM_SPACE), dtype=np.float64)
     ast = np.zeros(tess_sphere * N_TESS_SPHERE, dtype=np.float64)
     nctst = np.zeros((PCM_DIM_SPACE, tess_sphere * N_TESS_SPHERE), dtype=np.float64)
 
@@ -164,9 +162,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
     for isphere, sphere in enumerate(spheres):
 
 
-        xctst[:] = 0
-        yctst[:] = 0
-        zctst[:] = 0
+        xyz[:] = 0.0
         ast[:] = 0
         nctst[:] = 0
 
@@ -215,9 +211,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
                     continue
 
                 index = tess_sphere * itess + isubtess
-                xctst[index] = pp[0]
-                yctst[index] = pp[1]
-                zctst[index] = pp[2]
+                xyz[index] = pp.copy()
                 nctst[:, index] = pp1  # TODO: turn dimensions around
                 ast[index] = area
                 isfet[index] = isphere
@@ -226,7 +220,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
             if abs(ast[itess]) < M_EPSILON:
                 continue
             tessera = Tessera(
-                point=(xctst[itess], yctst[itess], zctst[itess]),
+                point=xyz[itess].copy(),
                 normal=nctst[:, itess].copy(),
                 area=ast[itess],
                 r_sphere=spheres[isfet[itess]].r
