@@ -37,18 +37,8 @@ def merge(tesserae, itesss_to_merge):
 def cav_gen(tess_sphere, tess_min_distance, spheres):
     cv = np.zeros((DIM_VERTICES, PCM_DIM_SPACE), dtype=np.float64)
 
-    rescaled_spheres = []
-    to_angstrom = lambda bohr: bohr / 1.8897259886
     for sphere in spheres:
-        rescaled_spheres.append(
-            Sphere(
-                to_angstrom(sphere.x),
-                to_angstrom(sphere.y),
-                to_angstrom(sphere.z),
-                to_angstrom(sphere.r)
-            )
-        )
-    spheres = rescaled_spheres
+        sphere.convert_to_angstrom()
 
     cv[0, 2] = 1.0
     cv[121, 2] = -1.0
