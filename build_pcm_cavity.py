@@ -9,15 +9,15 @@ from .connectivity import Connectivity
 from .get_vertex_positions import get_vertex_positions
 
 
-def build_pcm_cavity(subtesserae_per_sphere, minimum_tessera_distance_angstrom, spheres):
+def build_pcm_cavity(subtesserae_per_tessera, minimum_tessera_distance_angstrom, spheres):
     for sphere in spheres:
         sphere.convert_to_angstrom()
     vertex_positions = get_vertex_positions()
-    connectivity = Connectivity(subtesserae_per_sphere)
+    connectivity = Connectivity(subtesserae_per_tessera)
     cavity = Cavity()
     for isphere, sphere in enumerate(spheres):
         for itess in range(TESSERAE_PER_SPHERE):
-            for isubtess in range(subtesserae_per_sphere):
+            for isubtess in range(subtesserae_per_tessera):
                 pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
                 pts[:, 0] = vertex_positions[connectivity.n0(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
                 pts[:, 1] = vertex_positions[connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
