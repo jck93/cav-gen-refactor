@@ -1,9 +1,9 @@
-from dataclasses import dataclass
-
 import numpy as np
 
 from .subtessera_refactored import subtessera
 from .constants import *
+from .sphere import Sphere
+from .tessera import Tessera
 
 
 def get_itesss_to_merge(tesserae, tess_min_dist):
@@ -33,30 +33,7 @@ def merge(tesserae, itesss_to_merge):
     return tesserae
 
 
-
-
-@dataclass
-class Sphere:
-    x: np.float64
-    y: np.float64
-    z: np.float64
-    r: np.float64
-
-    @property
-    def xyz(self):
-        return np.array([self.x, self.y, self.z], dtype=np.float64)
-
-
-@dataclass
-class Tessera:
-    point: np.ndarray
-    normal: np.ndarray
-    area: np.float64
-    r_sphere: np.float64
-
-
 def cav_gen(tess_sphere, tess_min_distance, spheres):
-    isfet = np.zeros(DIM_TEN*DIM_ANGLES, dtype=int)
     cv = np.zeros((DIM_VERTICES, PCM_DIM_SPACE), dtype=np.float64)
 
     rescaled_spheres = []
@@ -89,14 +66,8 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
             cv[index, 2] = cth
 
 
-    isfet = []
     tesserae = []
     for isphere, sphere in enumerate(spheres):
-
-        xyz = []
-        nxyz = []
-        ast = []
-
         for itess in range(N_TESS_SPHERE):
             for isubtess in range(tess_sphere):
                 if tess_sphere == 1:
@@ -120,33 +91,28 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
                         n1 = JVT1[1, itess]
                         n2 = JVT1[5, itess]
                         n3 = JVT1[4, itess]
-
                 pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
-
                 pts[:, 0] = cv[n1, [0, 2, 1]] * sphere.r + sphere.xyz
                 pts[:, 1] = cv[n2, [0, 2, 1]] * sphere.r + sphere.xyz
                 pts[:, 2] = cv[n3, [0, 2, 1]] * sphere.r + sphere.xyz
                 point, normal, area = subtessera(isphere, spheres, pts)
                 if abs(area) >= M_EPSILON:
                     tesserae.append(Tessera(point, normal, area, sphere.r))
-
-    ntess = len(tesserae)
-
     itesss_to_merge = get_itesss_to_merge(tesserae, tess_min_distance)
     while itesss_to_merge is not None:
         tesserae = merge(tesserae, itesss_to_merge)
         itesss_to_merge = get_itesss_to_merge(tesserae, tess_min_distance)
     volume = sum(tessera.area * np.dot(tessera.point, tessera.normal) for tessera in tesserae) / 3
     area = sum(tessera.area for tessera in tesserae)
-
     to_bohr = lambda angstrom: angstrom * 1.8897259886
+    area_to_bohr = lambda angstrom: angstrom * 1.8897259886 ** 2
     tesserae_bohr = []
     for tessera in tesserae:
         tesserae_bohr.append(
             Tessera(
                 point=to_bohr(np.array(tessera.point)),
                 normal=tessera.normal,
-                area=tessera.area * 1.8897259886 ** 2,
+                area=area_to_bohr(tessera.area),
                 r_sphere=to_bohr(tessera.r_sphere)
             )
         )
