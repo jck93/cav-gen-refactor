@@ -34,7 +34,7 @@ class Connectivity:
     def __init__(self, subtesserae):
         self._subtesserae = subtesserae
 
-    def n1(self, itess, isubtess):
+    def n0(self, itess, isubtess):
         if self._subtesserae == 1:
             return JVT1[0, itess]
         else:
@@ -47,7 +47,7 @@ class Connectivity:
             else:  # isubtess == 3
                 return JVT1[1, itess]
 
-    def n2(self, itess, isubtess):
+    def n1(self, itess, isubtess):
         if self._subtesserae == 1:
             return JVT1[1, itess]
         else:
@@ -60,7 +60,7 @@ class Connectivity:
             else:  # isubtess == 3
                 return JVT1[5, itess]
 
-    def n3(self, itess, isubtess):
+    def n2(self, itess, isubtess):
         if self._subtesserae == 1:
             return JVT1[2, itess]
         else:

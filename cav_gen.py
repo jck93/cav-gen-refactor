@@ -73,9 +73,9 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
         for itess in range(N_TESS_SPHERE):
             for isubtess in range(tess_sphere):
                 pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
-                pts[:, 0] = cv[connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
-                pts[:, 1] = cv[connectivity.n2(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
-                pts[:, 2] = cv[connectivity.n3(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 0] = cv[connectivity.n0(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 1] = cv[connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 2] = cv[connectivity.n2(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
                 point, normal, area = subtessera(isphere, spheres, pts)
                 if abs(area) >= M_EPSILON:
                     tesserae.append(Tessera(point, normal, area, sphere.r))
