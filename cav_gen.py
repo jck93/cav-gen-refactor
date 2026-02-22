@@ -126,14 +126,9 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
                 pts[:, 0] = cv[n1, [0, 2, 1]] * sphere.r + sphere.xyz
                 pts[:, 1] = cv[n2, [0, 2, 1]] * sphere.r + sphere.xyz
                 pts[:, 2] = cv[n3, [0, 2, 1]] * sphere.r + sphere.xyz
-                pts, pp, pp1, area = subtessera(isphere, spheres, 3, pts)
+                pts, point, normal, area = subtessera(isphere, spheres, 3, pts)
                 if abs(area) >= M_EPSILON:
-                    tesserae.append(Tessera(
-                        point=pp.copy(),
-                        normal=pp1.copy(),
-                        area=area,
-                        r_sphere=spheres[isphere].r
-                    ))
+                    tesserae.append(Tessera(point, normal, area, sphere.r))
 
     ntess = len(tesserae)
 
