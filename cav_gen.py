@@ -160,7 +160,7 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
 
 
     ntess = 0
-    cts = []
+    tesserae = []
     for isphere, sphere in enumerate(spheres):
 
 
@@ -231,20 +231,20 @@ def cav_gen(tess_sphere, tess_min_distance, spheres):
                 area=ast[itess],
                 r_sphere=spheres[isfet[itess]].r
             )
-            cts.append(tessera)
+            tesserae.append(tessera)
 
-    ntess = len(cts)
+    ntess = len(tesserae)
 
-    itesss_to_merge = get_itesss_to_merge(cts, tess_min_distance)
+    itesss_to_merge = get_itesss_to_merge(tesserae, tess_min_distance)
     while itesss_to_merge is not None:
-        cts = merge(cts, itesss_to_merge)
-        itesss_to_merge = get_itesss_to_merge(cts, tess_min_distance)
-    volume = sum(tessera.area * np.dot(tessera.point, tessera.normal) for tessera in cts) / 3
-    area = sum(tessera.area for tessera in cts)
+        tesserae = merge(tesserae, itesss_to_merge)
+        itesss_to_merge = get_itesss_to_merge(tesserae, tess_min_distance)
+    volume = sum(tessera.area * np.dot(tessera.point, tessera.normal) for tessera in tesserae) / 3
+    area = sum(tessera.area for tessera in tesserae)
 
     to_bohr = lambda angstrom: angstrom * 1.8897259886
     tesserae_bohr = []
-    for tessera in cts:
+    for tessera in tesserae:
         tesserae_bohr.append(
             Tessera(
                 point=to_bohr(np.array(tessera.point)),
