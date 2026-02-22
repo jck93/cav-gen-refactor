@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 import numpy as np
 
-# from subtessera import subtessera
 from .subtessera_refactored import subtessera
 
 
@@ -143,34 +142,16 @@ def cav_gen(tess_sphere, tess_min_distance, sfe):
         )
     sfe = rescaled_spheres
 
-
-    """
-    cv(1,1)   =  M_ZERO
-    cv(1,2)   =  M_ZERO
-    cv(1,3)   =  M_ONE
-
-    cv(122,1) =  M_ZERO
-    cv(122,2) =  M_ZERO
-    cv(122,3) = -M_ONE
-    """
-
     cv[0, 2] = 1.0
     cv[121, 2] = -1.0
-
 
     index = 0
     for iangle in range(DIM_ANGLES):
         th = thev[iangle]
-        # fi = fiv[iangle]
         fi0 = fiv[iangle]
         cth = np.cos(th)
         sth = np.sin(th)
         for jangle in range(5):
-            """
-            fi += fir
-            if jangle == 0:
-                fi = fiv[iangle]
-            """
             fi = fi0 + jangle * fir
             index += 1
             cv[index, 0] = sth * np.cos(fi)
@@ -227,9 +208,6 @@ def cav_gen(tess_sphere, tess_min_distance, sfe):
                 pts[0, 2] = cv[n3, 0] * sphere.r + sphere.x
                 pts[1, 2] = cv[n3, 2] * sphere.r + sphere.y
                 pts[2, 2] = cv[n3, 1] * sphere.r + sphere.z
-
-                # area, pp, pp1 = subtessera(...)
-                # def subtessera(isphere, spheres, nv, pts):
                 nv = 3
                 pts, pp, pp1, area = subtessera(isphere, sfe, nv, pts)
 
