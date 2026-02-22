@@ -5,6 +5,7 @@ from .constants import *
 from .sphere import Sphere
 from .tessera import Tessera
 from .connectivity import Connectivity
+from .get_vertex_positions import get_vertex_positions
 
 
 def get_itesss_to_merge(tesserae, tess_min_dist):
@@ -35,37 +36,18 @@ def merge(tesserae, itesss_to_merge):
 
 
 def cav_gen(tess_sphere, tess_min_distance, spheres):
-    cv = np.zeros((DIM_VERTICES, PCM_DIM_SPACE), dtype=np.float64)
-
     for sphere in spheres:
         sphere.convert_to_angstrom()
-
-    cv[0, 2] = 1.0
-    cv[121, 2] = -1.0
-
-    index = 0
-    for iangle in range(DIM_ANGLES):
-        th = THEV[iangle]
-        fi0 = FIV[iangle]
-        cth = np.cos(th)
-        sth = np.sin(th)
-        for jangle in range(5):
-            fi = fi0 + jangle * FIR
-            index += 1
-            cv[index, 0] = sth * np.cos(fi)
-            cv[index, 1] = sth * np.sin(fi)
-            cv[index, 2] = cth
-
-
+    vertex_positions = get_vertex_positions()
     tesserae = []
     connectivity = Connectivity(tess_sphere)
     for isphere, sphere in enumerate(spheres):
         for itess in range(N_TESS_SPHERE):
             for isubtess in range(tess_sphere):
                 pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
-                pts[:, 0] = cv[connectivity.n0(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
-                pts[:, 1] = cv[connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
-                pts[:, 2] = cv[connectivity.n2(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 0] = vertex_positions[connectivity.n0(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 1] = vertex_positions[connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
+                pts[:, 2] = vertex_positions[connectivity.n2(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
                 point, normal, area = subtessera(isphere, spheres, pts)
                 if abs(area) >= M_EPSILON:
                     tesserae.append(Tessera(point, normal, area, sphere.r))
