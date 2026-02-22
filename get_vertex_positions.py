@@ -1,7 +1,5 @@
 import numpy as np
 
-from .constants import DIM_VERTICES, PCM_DIM_SPACE, DIM_ANGLES
-
 
 POLAR_ANGLES = ( 
   0.6523581398,  1.107148718, 1.382085796, 
@@ -14,7 +12,6 @@ POLAR_ANGLES = (
    2.285635528,  2.285635528, 2.588018295,
    2.815413584
 )
-
 AZIMUTHAL_ANGLES = (
   0.6283185307, 0.0000000000,
   0.6283185307, 0.0000000000, 0.6283185307, 
@@ -26,26 +23,21 @@ AZIMUTHAL_ANGLES = (
   0.3762646305, 0.8803724309, 0.6283188307, 
   0.0000000000
 )
-
-AZIMUTHAL_INCREMENT = 1.256637061
+AZIMUTHAL_STEPS = 5
+AZIMUTHAL_INCREMENT = 2*np.pi / AZIMUTHAL_STEPS
+NORTH_POLE = 0, 0, 1
+SOUTH_POLE = 0, 0, -1
 
 
 def get_vertex_positions():
-    vertex_positions = np.zeros((DIM_VERTICES, PCM_DIM_SPACE), dtype=np.float64)
-    vertex_positions[0, 2] = 1.0
-    vertex_positions[121, 2] = -1.0
-    index = 0
+    vertex_positions = [NORTH_POLE]
     for theta, phi_0 in zip(POLAR_ANGLES, AZIMUTHAL_ANGLES):
-        for jangle in range(5):
-            phi = phi_0 + jangle * AZIMUTHAL_INCREMENT
-            index += 1
-            vertex_positions[index, 0] = np.sin(theta) * np.cos(phi)
-            vertex_positions[index, 1] = np.sin(theta) * np.sin(phi)
-            vertex_positions[index, 2] = np.cos(theta)
-    return vertex_positions
-
-
-
-
+        for iphi in range(AZIMUTHAL_STEPS):
+            phi = phi_0 + iphi * AZIMUTHAL_INCREMENT
+            vertex_positions.append(
+                (np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta))
+            )
+    vertex_positions.append(SOUTH_POLE)
+    return np.array(vertex_positions, dtype=np.float64)
 
 
