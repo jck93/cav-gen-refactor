@@ -12,7 +12,7 @@ class TesseraBuilder:
         self._vertex_builder = VertexBuilder(spheres, subtesserae_per_tessera)
 
     def build(self, isphere, itess, isubtess):
-        pts = self._vertex_builder.build(isphere, itess, isubtess)
+        vertices = self._vertex_builder.build(isphere, itess, isubtess)
         TOL = -1e-10
         MAX_VERTICES = 10
         DIM_TEN = 10
@@ -30,11 +30,11 @@ class TesseraBuilder:
             if jsphere == isphere:
                 continue
             intscr = intsph.copy()
-            pscr[:, :nvertices] = pts[:, :nvertices]
+            pscr[:, :nvertices] = vertices[:, :nvertices]
             cccp[:, :nvertices] = ccc[:, :nvertices]
             ind = np.zeros(nvertices, dtype=int)
             for i in range(nvertices):
-                vec = pts[:, i] - other.xyz
+                vec = vertices[:, i] - other.xyz
                 if np.linalg.norm(vec) < other.r:
                     ind[i] = 1
             if np.all(ind[:nvertices] == 1):
@@ -50,10 +50,10 @@ class TesseraBuilder:
                     ltyp[i] = 2
                 elif ind[i] == 0 and ind[i_next] == 0:
                     ltyp[i] = 4
-                    rc_vec = ccc[:, i] - pts[:, i]
+                    rc_vec = ccc[:, i] - vertices[:, i]
                     rc = np.linalg.norm(rc_vec)
                     for j in range(1, 12):
-                        point = pts[:, i] + j * (pts[:, i_next] - pts[:, i]) / 11
+                        point = vertices[:, i] + j * (vertices[:, i_next] - vertices[:, i]) / 11
                         point -= ccc[:, i]
                         point = point * rc / np.linalg.norm(point) + ccc[:, i]
                         dist = np.linalg.norm(point - other.xyz)
@@ -73,12 +73,12 @@ class TesseraBuilder:
                 if ltyp[i] == 0:
                     continue
                 elif ltyp[i] == 1:
-                    pts[:, na] = pscr[:, i]
+                    vertices[:, na] = pscr[:, i]
                     ccc[:, na] = cccp[:, i]
                     intsph[na] = intscr[i]
                     na += 1
                     p4 = inter(other, pscr[:, i], pscr[:, i_next], cccp[:, i], 0)
-                    pts[:, na] = p4
+                    vertices[:, na] = p4
                     de2 = np.linalg.norm(other.xyz - sphere.xyz) ** 2
                     prefactor = (sphere.r**2 - other.r**2 + de2) / (2 * de2)
                     ccc[:, na] = sphere.xyz + prefactor * (other.xyz - sphere.xyz)
@@ -86,35 +86,35 @@ class TesseraBuilder:
                     na += 1
                 elif ltyp[i] == 2:
                     p4 = inter(other, pscr[:, i], pscr[:, i_next], cccp[:, i], 1)
-                    pts[:, na] = p4
+                    vertices[:, na] = p4
                     ccc[:, na] = cccp[:, i]
                     intsph[na] = intscr[i]
                     na += 1
                 elif ltyp[i] == 3:
-                    pts[:, na] = pscr[:, i]
+                    vertices[:, na] = pscr[:, i]
                     ccc[:, na] = cccp[:, i]
                     intsph[na] = intscr[i]
                     na += 1
                     p4 = inter(other, pscr[:, i], pointl[:, i], cccp[:, i], 0)
-                    pts[:, na] = p4
+                    vertices[:, na] = p4
                     de2 = np.linalg.norm(other.xyz - sphere.xyz) ** 2
                     prefactor = (sphere.r**2 - other.r**2 + de2) / (2 * de2)
                     ccc[:, na] = sphere.xyz + prefactor * (other.xyz - sphere.xyz)
                     intsph[na] = jsphere
                     na += 1
                     p4 = inter(other, pointl[:, i], pscr[:, i_next], cccp[:, i], 1)
-                    pts[:, na] = p4
+                    vertices[:, na] = p4
                     ccc[:, na] = cccp[:, i]
                     intsph[na] = intscr[i]
                     na += 1
                 elif ltyp[i] == 4:
-                    pts[:, na] = pscr[:, i]
+                    vertices[:, na] = pscr[:, i]
                     ccc[:, na] = cccp[:, i]
                     intsph[na] = intscr[i]
                     na += 1
             nvertices = na
             if nvertices > MAX_VERTICES:
                 raise Exception("Too many vertices on the tessera")
-        area, pp, pp1 = gaubon(self._spheres, nvertices, isphere, pts, ccc, intsph)
+        area, pp, pp1 = gaubon(self._spheres, nvertices, isphere, vertices, ccc, intsph)
         return Tessera(pp, pp1, area, sphere.r)
 
