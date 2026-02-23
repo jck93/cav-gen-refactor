@@ -3,13 +3,16 @@ from .inter import inter
 from .gaubon import gaubon
 from .constants import NVERTICES
 from .tessera import Tessera
+from .vertex_builder import VertexBuilder
 
 
 class TesseraBuilder:
-    def __init__(self, spheres):
+    def __init__(self, spheres, subtesserae_per_tessera):
         self._spheres = spheres
+        self._vertex_builder = VertexBuilder(spheres, subtesserae_per_tessera)
 
-    def build(self, isphere, pts):
+    def build(self, isphere, itess, isubtess):
+        pts = self._vertex_builder.build(isphere, itess, isubtess)
         TOL = -1e-10
         MAX_VERTICES = 10
         DIM_TEN = 10
