@@ -61,7 +61,8 @@ class TesseraBuilder:
             icut = np.sum((ltyp == 1) | (ltyp == 2)) + 2 * np.sum(ltyp == 3)
             icut //= 2
             if icut > 1:
-                return Tessera(pp, pp1, area, sphere.r)
+                # return Tessera(pp, pp1, area, sphere.r)
+                return Tessera(None, None, None, None, covered=True)
             na = 0
             for i in range(nvertices):
                 i_next = (i + 1) % nvertices

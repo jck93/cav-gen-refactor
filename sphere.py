@@ -17,13 +17,14 @@ class Sphere:
 
     def convert_to_angstrom(self):
         if self.unit == "angstrom":
-            return
+            return type(self)(self.x, self.y, self.z, self.z)
         if self.unit == "bohr":
             bohr_to_angstrom = lambda bohr: bohr / 1.8897259886
-            self.x = bohr_to_angstrom(self.x)
-            self.y = bohr_to_angstrom(self.y)
-            self.z = bohr_to_angstrom(self.z)
-            self.r = bohr_to_angstrom(self.r)
-            self.unit = "angstrom"
+            x = bohr_to_angstrom(self.x)
+            y = bohr_to_angstrom(self.y)
+            z = bohr_to_angstrom(self.z)
+            r = bohr_to_angstrom(self.r)
+            unit = "angstrom"
+            return type(self)(x, y, z, r, unit)
 
 
