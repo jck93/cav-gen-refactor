@@ -32,17 +32,22 @@ NORTH_POLE = 0, 0, 1
 SOUTH_POLE = 0, 0, -1
 
 
-class VertexPositions:
-    def __init__(self, subtesserae_per_tessera):
-        self._vertex_positions = self._get_vertex_positions()
+class VertexBuilder:
+    def __init__(self, spheres, subtesserae_per_tessera):
+        self._spheres = spheres
         self._connectivity = Connectivity(subtesserae_per_tessera)
+        self._vertex_positions = self._get_vertex_positions()
 
-    def __call__(self, sphere, itess, isubtess):
-        pts = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
-        pts[:, 0] = self._vertex_positions[self._connectivity.n0(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
-        pts[:, 1] = self._vertex_positions[self._connectivity.n1(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
-        pts[:, 2] = self._vertex_positions[self._connectivity.n2(itess, isubtess), [0, 2, 1]] * sphere.r + sphere.xyz
-        return pts
+    def build(self, isphere, itess, isubtess):
+        sphere = self._spheres[isphere]
+        vertices = np.zeros((PCM_DIM_SPACE, DIM_TEN), dtype=np.float64) # (1:PCM_DIM_SPACE, 1:DIM_TEN)
+        unit_sphere_vertex_0 = self._vertex_positions[self._connectivity.n0(itess, isubtess), [0, 2, 1]]
+        unit_sphere_vertex_1 = self._vertex_positions[self._connectivity.n1(itess, isubtess), [0, 2, 1]]
+        unit_sphere_vertex_2 = self._vertex_positions[self._connectivity.n2(itess, isubtess), [0, 2, 1]]
+        vertices[:, 0] = unit_sphere_vertex_0 * sphere.r + sphere.xyz
+        vertices[:, 1] = unit_sphere_vertex_1 * sphere.r + sphere.xyz
+        vertices[:, 2] = unit_sphere_vertex_2 * sphere.r + sphere.xyz
+        return vertices
 
     def _get_vertex_positions(self):
         vertex_positions = [NORTH_POLE]
