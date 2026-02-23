@@ -45,7 +45,7 @@ class TesseraBuilder:
             # Determine which vertices are inside the other sphere
             ind = np.zeros(nvertices, dtype=int)
             for i in range(nvertices):
-                vec = pts[:, i] - np.array([other.x, other.y, other.z])
+                vec = pts[:, i] - other.xyz
                 if np.linalg.norm(vec) < other.r:
                     ind[i] = 1
 
@@ -72,7 +72,7 @@ class TesseraBuilder:
                         point = pts[:, i] + j * (pts[:, i_next] - pts[:, i]) / 11
                         point -= ccc[:, i]
                         point = point * rc / np.linalg.norm(point) + ccc[:, i]
-                        dist = np.linalg.norm(point - np.array([other.x, other.y, other.z]))
+                        dist = np.linalg.norm(point - other.xyz)
                         if abs(dist - other.r) < TOL:
                             ltyp[i] = 3
                             pointl[:, i] = point
@@ -102,9 +102,9 @@ class TesseraBuilder:
                     p4 = inter(other, pscr[:, i], pscr[:, i_next], cccp[:, i], 0)
                     pts[:, na] = p4
 
-                    de2 = np.sum((np.array([other.x, other.y, other.z]) - np.array([sphere.x, sphere.y, sphere.z]))**2)
+                    de2 = np.sum((other.xyz - sphere.xyz)**2)
                     prefactor = (sphere.r**2 - other.r**2 + de2) / (2 * de2)
-                    ccc[:, na] = np.array([sphere.x, sphere.y, sphere.z]) + prefactor * (np.array([other.x, other.y, other.z]) - np.array([sphere.x, sphere.y, sphere.z]))
+                    ccc[:, na] = sphere.xyz + prefactor * (other.xyz - sphere.xyz)
                     intsph[na] = jsphere
                     na += 1
 
@@ -127,9 +127,9 @@ class TesseraBuilder:
                     p4 = inter(other, pscr[:, i], pointl[:, i], cccp[:, i], 0)
                     pts[:, na] = p4
 
-                    de2 = np.sum((np.array([other.x, other.y, other.z]) - np.array([sphere.x, sphere.y, sphere.z]))**2)
+                    de2 = np.sum((other.xyz - sphere.xyz) ** 2)
                     prefactor = (sphere.r**2 - other.r**2 + de2) / (2 * de2)
-                    ccc[:, na] = np.array([sphere.x, sphere.y, sphere.z]) + prefactor * (np.array([other.x, other.y, other.z]) - np.array([sphere.x, sphere.y, sphere.z]))
+                    ccc[:, na] = sphere.xyz + prefactor * (other.xyz - sphere.xyz)
                     intsph[na] = jsphere
                     na += 1
 
